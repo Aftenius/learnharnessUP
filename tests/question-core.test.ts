@@ -484,10 +484,12 @@ describe("buildAnswer", () => {
 		assert.equal(buildAnswer(quizData(), { values: ["mercury"] }).confidence, undefined);
 	});
 
-	it("drops confidence on dontKnow and on non-quiz kinds", () => {
+	it("drops confidence on dontKnow and on ask, and keeps it on explain", () => {
 		assert.equal(buildAnswer(quizData(), { dontKnow: true, confidence: 70 }).confidence, undefined);
 		const ask = quizData({ kind: "ask", correctIndices: undefined, explanation: undefined });
 		assert.equal(buildAnswer(ask, { other: "x", confidence: 70 }).confidence, undefined);
+		const explain = quizData({ kind: "explain", mode: "text", options: [], correctIndices: undefined, explanation: undefined });
+		assert.equal(buildAnswer(explain, { text: "because", confidence: 30 }).confidence, 30);
 	});
 
 	it("multi-select grades as exact-set", () => {

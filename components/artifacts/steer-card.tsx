@@ -1,6 +1,7 @@
 "use client";
 
 import { CheckIcon, CircleX } from "lucide-react";
+import { ruCount } from "@/components/ru";
 import type { PdfResult, ResearchResult, SubagentArtifactData } from "@/src/core";
 import type { LhViewMessage } from "@/src/core";
 import { isSubagentFailure } from "@/src/core";
@@ -38,7 +39,7 @@ export function SubagentSteerCard({ message }: { message: LhViewMessage }) {
 		if (aborted?.data) return <AbortedBadge kind={aborted.data.kind ?? "job"} />;
 		return (
 				<div className="rounded-xl border bg-card p-4 text-sm text-muted-foreground">
-				A sub-agent finished, but its result could not be displayed.
+				Агент завершил работу, но результат не удалось показать.
 			</div>
 		);
 	}
@@ -65,12 +66,20 @@ export function SubagentSteerCard({ message }: { message: LhViewMessage }) {
 /** The aborted-job chip: mirrors the complete-badge one-liner — the
  * teacher's wake turn acknowledges the abort in the lesson itself,
  * this just marks what happened. */
+const ABORT_KIND: Record<string, string> = {
+	research: "Исследование",
+	demo: "Демо",
+	visual: "Рисунок",
+	pdf: "PDF",
+	job: "Задание",
+};
+
 function AbortedBadge({ kind }: { kind: string }) {
 	return (
 		<div data-testid="job-aborted-badge" className="flex items-center gap-2 text-xs text-muted-foreground">
 			<CircleX className="size-3.5" />
-			<span className="font-medium uppercase tracking-wide">{kind}</span>
-			<span>aborted by the learner</span>
+			<span className="font-medium uppercase tracking-wide">{ABORT_KIND[kind] ?? kind}</span>
+			<span>прервано</span>
 		</div>
 	);
 }
@@ -88,14 +97,14 @@ function PdfCompleteBadge({ result }: { result: PdfResult }) {
 			<summary className="flex cursor-pointer select-none list-none items-center gap-2 [&::-webkit-details-marker]:hidden">
 				<CheckIcon className="size-3.5" />
 				<span className="font-medium uppercase tracking-wide">PDF</span>
-				<span>reading complete</span>
+				<span>чтение завершено</span>
 				{readPages.length > 0 && (
 					<span>
-						· read {readPages.length} page{readPages.length === 1 ? "" : "s"}
+						· прочитано {ruCount(readPages.length, "страница", "страницы", "страниц")}
 					</span>
 				)}
-				<span className="ml-1 text-xs text-muted-foreground/70 group-open:hidden">view brief</span>
-				<span className="ml-1 hidden text-xs text-muted-foreground/70 group-open:inline">hide brief</span>
+				<span className="ml-1 text-xs text-muted-foreground/70 group-open:hidden">показать сводку</span>
+				<span className="ml-1 hidden text-xs text-muted-foreground/70 group-open:inline">скрыть сводку</span>
 			</summary>
 			<div className="mt-2">
 				<PdfBriefCard output={result} />
@@ -114,11 +123,11 @@ function ResearchCompleteBadge({ result }: { result: ResearchResult }) {
 		<details data-testid="research-complete-badge" className="group w-full text-xs text-muted-foreground">
 			<summary className="flex cursor-pointer select-none list-none items-center gap-2 [&::-webkit-details-marker]:hidden">
 				<CheckIcon className="size-3.5" />
-				<span className="font-medium uppercase tracking-wide">Research</span>
-				<span>complete</span>
-				{result.sources.length > 0 && <span>· {result.sources.length} sources</span>}
-				<span className="ml-1 text-xs text-muted-foreground/70 group-open:hidden">view brief</span>
-				<span className="ml-1 hidden text-xs text-muted-foreground/70 group-open:inline">hide brief</span>
+				<span className="font-medium uppercase tracking-wide">Исследование</span>
+				<span>готово</span>
+				{result.sources.length > 0 && <span>· {ruCount(result.sources.length, "источник", "источника", "источников")}</span>}
+				<span className="ml-1 text-xs text-muted-foreground/70 group-open:hidden">показать сводку</span>
+				<span className="ml-1 hidden text-xs text-muted-foreground/70 group-open:inline">скрыть сводку</span>
 			</summary>
 			<div className="mt-2">
 				<ResearchBriefCard output={result} />

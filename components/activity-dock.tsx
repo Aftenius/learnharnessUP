@@ -231,9 +231,9 @@ export function toBlobs(feed: ActivityFeed): ActivityBlob[] {
 			// 66dbea9): a pinned model whose key is gone reads as the key
 			// being needed, same quiet tone.
 			activity: isModelsRefusal(job.error)
-				? "needs model setup"
+				? "нужна настройка моделей"
 				: isProviderKeyRefusal(job.error)
-					? "needs a provider key"
+					? "нужен ключ провайдера"
 					: (job.activity ?? ""),
 			model: usage?.model,
 			steps: usage?.steps,
@@ -259,10 +259,10 @@ export function toBlobs(feed: ActivityFeed): ActivityBlob[] {
 /** Elapsed as a compact ticking string: 45s / 3m 04s / 1h 12m. */
 export function formatElapsed(ms: number): string {
 	const s = Math.max(0, Math.floor(ms / 1000));
-	if (s < 60) return `${s}s`;
+	if (s < 60) return `${s} с`;
 	const m = Math.floor(s / 60);
-	if (m < 60) return `${m}m ${String(s % 60).padStart(2, "0")}s`;
-	return `${Math.floor(m / 60)}h ${String(m % 60).padStart(2, "0")}m`;
+	if (m < 60) return `${m} мин ${String(s % 60).padStart(2, "0")} с`;
+	return `${Math.floor(m / 60)} ч ${String(m % 60).padStart(2, "0")} мин`;
 }
 
 // ─── The section (the sidebar's bottom strip) ─────────────────────────────────
@@ -347,9 +347,9 @@ export function ActivitySection({ feed: feedProp }: { feed?: ActivityFeed }) {
 		<section data-testid="activity-section" className="border-t border-border px-3 pb-3 pt-2">
 			<div className="mb-1 flex items-center gap-1.5 text-xs uppercase tracking-widest text-muted-foreground/70">
 				<ActivityIcon className="size-3" />
-				Background agents
+				Фоновые агенты
 				{blobs.length > 0 && (
-					<span className="ml-auto tabular-nums" data-testid="activity-total-cost" title="Total running cost (inferred)">
+					<span className="ml-auto tabular-nums" data-testid="activity-total-cost" title="Общая текущая стоимость (оценка)">
 						{planCostLabel(totalCost, subscriptionLabels(blobs.map((blob) => blob.model)))}
 				</span>
 				)}
@@ -390,18 +390,24 @@ function ActivityBlobRow({
 	onAbort: () => void;
 }) {
 	const Icon = blob.process === "extraction" ? WaypointsIcon : (blob.jobKind && KIND_ICON[blob.jobKind]) || BotIcon;
+	const phaseName =
+		blob.phase === "extracting" ? "извлечение"
+		: blob.phase === "auditing" ? "аудит"
+		: blob.phase === "merging" ? "слияние"
+		: blob.phase === "embedding" ? "эмбеддинг"
+		: blob.phase ?? "выполняется";
 	const label =
 		blob.process === "extraction"
-			? `Extraction — ${blob.phase ?? "running"}`
+			? `Извлечение — ${phaseName}`
 			: blob.jobKind === "research"
-				? "Researcher"
+				? "Исследователь"
 				: blob.jobKind === "demo"
-					? "Demo builder"
+					? "Сборщик демо"
 					: blob.jobKind === "visual"
-						? "Figure maker"
+						? "Создатель рисунков"
 						: blob.jobKind === "pdf"
-							? "PDF reader"
-							: "Sub-agent";
+							? "Чтение PDF"
+							: "Субагент";
 	return (
 		<div
 			data-testid={`activity-blob-${blob.process}`}
@@ -437,8 +443,8 @@ function ActivityBlobRow({
 				data-testid="activity-abort"
 				onClick={onAbort}
 				disabled={abortState !== undefined}
-				title={abortState === "failed" ? "Abort failed — try again" : "End this background process"}
-				aria-label={`End ${label} in ${blob.title}`}
+				title={abortState === "failed" ? "Не удалось прервать — повторите" : "Завершить этот фоновый процесс"}
+				aria-label={`Завершить «${label}» в «${blob.title}»`}
 				className="absolute right-1 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground/70 transition-colors hover:bg-destructive/10 hover:text-destructive disabled:opacity-50"
 			>
 				<SquareIcon className="size-3" />
@@ -462,13 +468,13 @@ function ActivityBlobRow({
 						</div>
 						{blob.activity && <div className="break-words">{blob.activity}</div>}
 						<div className="flex justify-between gap-2">
-							<span>Cost</span>
+							<span>Стоимость</span>
 							<span className="tabular-nums text-card-foreground">
 								{planCostLabel(blob.cost, subscriptionLabel(blob.model))}
 							</span>
 						</div>
 						<div className="flex justify-between gap-2">
-							<span>Context</span>
+							<span>Контекст</span>
 							<span className="tabular-nums text-card-foreground" data-testid="activity-blob-context">
 								{blob.context === null
 									? "—"
@@ -477,23 +483,23 @@ function ActivityBlobRow({
 						</div>
 						{blob.model && (
 							<div className="flex justify-between gap-2">
-								<span>Model</span>
+								<span>Модель</span>
 								<span className="truncate text-card-foreground">{blob.model}</span>
 							</div>
 						)}
 						{blob.steps !== undefined && (
 							<div className="flex justify-between gap-2">
-								<span>Steps</span>
+								<span>Шаги</span>
 								<span className="tabular-nums text-card-foreground">{blob.steps}</span>
 							</div>
 						)}
 						<a href={`/chat/${blob.chatId}`} className="text-primary hover:underline">
-							Open session →
+							Открыть сессию →
 						</a>
 					</div>
 					<div className="mt-2 text-muted-foreground/80">
-					{abortState === "failed" && "Abort failed — try again"}
-					{abortState === "pending" && "Stopping…"}
+					{abortState === "failed" && "Не удалось прервать — повторите"}
+					{abortState === "pending" && "Остановка…"}
 				</div>
 				</div>
 			)}

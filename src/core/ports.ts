@@ -9,7 +9,9 @@
  * adapters may import core; core NEVER imports an adapter.
  */
 
+import type { ContradictionProposal } from "./contradictions.ts";
 import type { LhMessage } from "./native-messages.ts";
+import type { ReviewRecord } from "./sm2.ts";
 import type {
 	ChatRecord,
 	ChatSettings,
@@ -200,6 +202,22 @@ export interface PromptOverrideStore {
 	/** Remove the override file, if present (switches are untouched — an
 	 *  on-switch with no file composes the source default, inert). */
 	deleteOverride(segmentPath: string): void;
+}
+
+// ─── ReviewStore — SM-2 ledger, never a field on GraphNode ───────────────────
+
+/** Scheduling state for proposition cards. Separate from nodes.jsonl. */
+export interface ReviewStore {
+	readReviews(): ReviewRecord[];
+	writeReviews(records: ReviewRecord[]): void;
+}
+
+// ─── ContradictionStore — proposals only, never a merge ──────────────────────
+
+/** Open and labeled contradiction proposals. Labels are the learner's. */
+export interface ContradictionStore {
+	readProposals(): ContradictionProposal[];
+	writeProposals(proposals: ContradictionProposal[]): void;
 }
 
 // ─── AuthStore — BYOK provider keys (auth-keys wave, 2026-09-19) ────────────

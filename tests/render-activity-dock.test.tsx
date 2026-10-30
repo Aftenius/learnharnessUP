@@ -88,7 +88,7 @@ describe("activity dock pure layer", () => {
 			error: "No OpenRouter key is set — add one in Settings → Keys",
 		});
 		const blob = toBlobs({ jobs: [refused], extractions: [] })[0]!;
-		assert.equal(blob.activity, "needs a provider key");
+		assert.equal(blob.activity, "нужен ключ провайдера");
 	});
 
 	it("a models-refused job reads as info — 'needs model setup', not 'failed' (BYOK, 2026-09-22)", () => {
@@ -98,7 +98,7 @@ describe("activity dock pure layer", () => {
 			error: "No model configured — set up your models first (missing: vision)",
 		});
 		const blob = toBlobs({ jobs: [refused], extractions: [] })[0]!;
-		assert.equal(blob.activity, "needs model setup");
+		assert.equal(blob.activity, "нужна настройка моделей");
 		// A real failure keeps the runner's honest wording.
 		const crashed = job({ status: "error", activity: "failed", error: "FAILED: headless crashed" });
 		const real = toBlobs({ jobs: [crashed], extractions: [] })[0]!;
@@ -170,9 +170,9 @@ describe("activity dock pure layer", () => {
 	});
 
 	it("formatElapsed ticks compactly", () => {
-		assert.equal(formatElapsed(45_000), "45s");
-		assert.equal(formatElapsed(184_000), "3m 04s");
-		assert.equal(formatElapsed(4_320_000), "1h 12m");
+		assert.equal(formatElapsed(45_000), "45 с");
+		assert.equal(formatElapsed(184_000), "3 мин 04 с");
+		assert.equal(formatElapsed(4_320_000), "1 ч 12 мин");
 	});
 
 	it("formatUsd keeps four decimals under $1, two above", () => {
@@ -191,7 +191,7 @@ describe("activity section render", () => {
 	it("renders the ALWAYS-PRESENT header when idle — empty means empty, nothing hides", () => {
 		const html = renderToStaticMarkup(<ActivitySection feed={{ jobs: [], extractions: [] }} />);
 		assert.match(html, /data-testid="activity-section"/);
-		assert.match(html, /Background agents/);
+		assert.match(html, /Фоновые агенты/);
 		assert.doesNotMatch(html, /activity-blob-(job|extraction)/, "no rows while idle");
 		assert.doesNotMatch(html, /activity-total-cost/, "the cost span is population, not decoration");
 	});
@@ -210,12 +210,12 @@ describe("activity section render", () => {
 		assert.match(html, /data-testid="activity-blob-extraction"/);
 		assert.match(html, /Chain-rule demo/);
 		assert.match(html, /building sandbox…/);
-		assert.match(html, /Extraction — merging/);
+		assert.match(html, /Извлечение — слияние/);
 		// Unpriced job → "—", never $0.0000 (doctrine); both blobs show it.
 		assert.match(html, /activity-blob-cost[^>]*>—</);
 		assert.match(html, /data-testid="activity-abort"/, "END on the blob face, popover-independent");
-		assert.match(html, /\bEnd\b/, "the explicit END button");
-		assert.match(html, /Background agents/);
+		assert.match(html, /Завершить/, "the explicit END button");
+		assert.match(html, /Фоновые агенты/);
 		// Total cost: nothing priced → "—" in the header.
 		assert.match(html, /activity-total-cost[^>]*>—</);
 		// Truncation-reveals KEEP native title (tooltip wave mechanism rule):

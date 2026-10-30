@@ -177,7 +177,7 @@ test("a failed save keeps the previous language, including a shortcut pressed wh
 	await act(async () => { write.resolve(Response.json({}, { status: 500 })); await saved; });
 	assert.equal(await saved, false);
 	assert.equal(f.setting.language, "pl");
-	assert.match(f.setting.error!, /Could not save/);
+	assert.match(f.setting.error!, /Не удалось сохранить/);
 	assert.equal(Socket.all[0]!.language, "pl");
 });
 

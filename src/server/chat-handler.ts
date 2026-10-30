@@ -7,6 +7,7 @@ import {
 	type TeachingAgent,
 } from "../agent/teacher-agent.ts";
 import { piEngineForSpec, type PiEngine } from "../agent/models.ts";
+import { critiqueExplainAnswer } from "./critic-pass.ts";
 import { connectionBackgroundAllowed as subscriptionBackgroundAllowed, connectionScopeCurrent, isSubscriptionProvider } from "../agent/subscription-connections.ts";
 import { nativeSubscriptionError } from "../agent/subscription-stream.ts";
 import { chatGPTStreamError } from "../agent/chatgpt-stream.ts";
@@ -262,12 +263,24 @@ export async function handleChatInput(
 	try { conversationEngine = piEngineForSpec(conversation, () => callPurpose.background, lifecycle); }
 	catch { return Response.json({ error: conversation.provider === "chatgpt" ? chatGPTStreamError("model catalog") : isSubscriptionProvider(conversation.provider) ? nativeSubscriptionError(conversation.provider, "model catalog") : "The selected model is unavailable." }, { status: 503 }); }
 	const modelIdForCompaction = `${conversationEngine.model.provider}:${conversationEngine.model.id}`;
+	const cheapSlot = effective.models.cheap;
+	let compactionEngine = piEngineForSpec(conversation, true);
+	let compactionModelId = modelIdForCompaction;
+	if (cheapSlot) {
+		try {
+			compactionEngine = piEngineForSpec(cheapSlot, true);
+			compactionModelId = `${cheapSlot.provider}:${cheapSlot.id}`;
+		} catch {
+			compactionEngine = piEngineForSpec(conversation, true);
+			compactionModelId = modelIdForCompaction;
+		}
+	}
 	await ensureCompacted(
 		{
 			chatStore: stores.chatStore,
-			engine: piEngineForSpec(conversation, true),
-			canStart: () => connectionBackgroundAllowed(conversation.provider),
-			modelId: modelIdForCompaction,
+			engine: compactionEngine,
+			canStart: () => connectionBackgroundAllowed(cheapSlot ? cheapSlot.provider : conversation.provider),
+			modelId: compactionModelId,
 			kind: record.kind === "practice" ? "practice" : hasProbeDone(record.messages) ? "teach" : "probe",
 			thresholdTokens: effectiveThresholdTokens(
 				effective.compaction?.thresholdTokens,
@@ -311,6 +324,10 @@ export async function handleChatInput(
 			return Response.json({ error: err.message }, { status: 400 });
 		}
 		throw err;
+	}
+	if (input.type === "answer") {
+		const note = await critiqueExplainAnswer(input.answer, conversation, effective.models.cheap);
+		if (note) appends = [...appends, note];
 	}
 
 	// THE PARALLEL-QUESTION GATE (owner, 2026-10-03 — the deepseek parallel

@@ -20,10 +20,10 @@ import { BrailleSpinner } from "@/components/braille-spinner";
  *                 box must not duplicate it.
  */
 const KIND_LABEL: Record<JobKind, string> = {
-	research: "Research agent",
-	demo: "Demo agent",
-	visual: "Figure agent",
-	pdf: "PDF reader",
+	research: "Агент исследования",
+	demo: "Агент демо",
+	visual: "Агент рисунка",
+	pdf: "Читатель PDF",
 };
 
 export function DispatchCard({ toolCallId, kind }: { toolCallId: string; kind: JobKind }) {
@@ -41,10 +41,10 @@ export function DispatchCard({ toolCallId, kind }: { toolCallId: string; kind: J
 	// whose key is gone reads as the key being needed — the deep-link
 	// lands on the SetupDialog's first-key stage on its own.
 	if (isModelsRefusal(job.error)) {
-		return <DispatchRefusedCard label={label} line="needs model setup" button="Set up models" />;
+		return <DispatchRefusedCard label={label} line="нужна настройка моделей" button="Настроить модели" />;
 	}
 	if (isProviderKeyRefusal(job.error)) {
-		return <DispatchRefusedCard label={label} line="needs a provider key" button="Add a key" />;
+		return <DispatchRefusedCard label={label} line="нужен ключ провайдера" button="Добавить ключ" />;
 	}
 	const failed = job.status === "error";
 	return (
@@ -54,7 +54,7 @@ export function DispatchCard({ toolCallId, kind }: { toolCallId: string; kind: J
 		>
 			{failed ? <XIcon className="size-3.5 text-red-500" /> : <CheckIcon className="size-3.5" />}
 			<span className="font-medium uppercase tracking-wide">{label}</span>
-			<span>{failed ? "failed" : "finished"}</span>
+			<span>{failed ? "ошибка" : "готово"}</span>
 		</div>
 	);
 }
@@ -99,9 +99,9 @@ function DispatchActivityCard({ job, label }: { job: JobRecord | null; label: st
 				    the Braille spinner replaces the pulsing dot — one indicator
 				    everywhere. This is the ONLY dispatch-card change; the card's
 				    shape is untouched. */}
-				<BrailleSpinner label={`${label} running`} />
+				<BrailleSpinner label={`${label} выполняется`} />
 				{label}
-				{elapsed !== null && <span className="font-normal">· {elapsed}s</span>}
+				{elapsed !== null && <span className="font-normal">· {elapsed} с</span>}
 			</div>
 			{job?.activity && (
 				<div className="mt-1 truncate text-sm text-muted-foreground" data-testid="dispatch-activity-line">
@@ -110,7 +110,7 @@ function DispatchActivityCard({ job, label }: { job: JobRecord | null; label: st
 			)}
 			{!job && (
 				<div className="mt-1 text-sm text-muted-foreground" data-testid="dispatch-pending">
-					Dispatched…
+					Отправлено…
 				</div>
 			)}
 		</div>

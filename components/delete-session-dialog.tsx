@@ -12,8 +12,8 @@ import type { ChatDeleteMode, ChatListItem } from "@/src/core";
 export const TRACES_COPY = {
 	testid: "delete-traces",
 	checkbox: "delete-traces-checkbox",
-	title: "Also remove its graph traces",
-	body: "This session’s topics, links, and events leave the graph too. Topics other sessions or imported notes also cover survive; topics only this session created are removed entirely.",
+	title: "Также убрать её следы в графе",
+	body: "Темы, связи и события этой сессии тоже уходят из графа. Темы, которые есть и в других сессиях или в импортированных заметках, остаются; темы, созданные только этой сессией, удаляются полностью.",
 };
 
 /**
@@ -103,13 +103,13 @@ export function DeleteSessionDialog({
 			if (!res.ok) {
 				// 409 (turn/jobs running) and 503 (extraction winding down) are
 				// both retryable — keep the dialog open, show the server's line.
-				setFailure({ code: body.code ?? "error", error: body.error ?? `Delete failed (${res.status})` });
+				setFailure({ code: body.code ?? "error", error: body.error ?? `Не удалось удалить (${res.status})` });
 				setBusy(false);
 				return;
 			}
 			onDeleted(chat.id, mode, body.graphRevision ?? 0);
 		} catch {
-			setFailure({ code: "network", error: "Delete failed — network error. Try again." });
+			setFailure({ code: "network", error: "Не удалось удалить — ошибка сети. Повторите." });
 			setBusy(false);
 		}
 	};
@@ -159,12 +159,12 @@ export function DeleteSessionBody({
 		<div
 			role="dialog"
 			aria-modal="true"
-			aria-label="Delete session"
+			aria-label="Удалить сессию"
 			data-testid="delete-session-dialog"
 			onClick={(e) => e.stopPropagation()}
 			className="w-[32rem] max-w-[calc(100vw-2rem)] rounded-xl border bg-card p-5 shadow-xl"
 		>
-			<h2 className="text-sm font-semibold text-destructive">Delete session?</h2>
+			<h2 className="text-sm font-semibold text-destructive">Удалить сессию?</h2>
 			{/* The session name below the title in JetBrains Mono (owner,
 			    2026-09-24): no code-block chrome — the font already says
 			    code. Owner, 2026-10-13 polish: normal text-sm size (was
@@ -176,8 +176,8 @@ export function DeleteSessionBody({
 				</code>
 			</div>
 			<p className="mt-2 text-sm text-muted-foreground">
-				This permanently removes the session — its messages, background jobs, and extraction records. Everything
-				it added to the graph stays unless you check below. This cannot be undone.
+				Сессия удаляется навсегда — её сообщения, фоновые задачи и записи извлечения. Всё,
+				что она добавила в граф, остаётся, пока вы не отметите пункт ниже. Отменить нельзя.
 			</p>
 			<label
 				data-testid={TRACES_COPY.testid}
@@ -210,7 +210,7 @@ export function DeleteSessionBody({
 						disabled={busy}
 						className="ml-3 text-xs text-foreground underline-offset-2 hover:underline disabled:opacity-40"
 					>
-						Try again
+						Повторить
 					</button>
 				</div>
 			)}
@@ -225,7 +225,7 @@ export function DeleteSessionBody({
 					disabled={busy}
 					className="rounded-sm px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
 				>
-					Cancel
+					Отмена
 				</button>
 				<button
 					type="button"
@@ -234,7 +234,7 @@ export function DeleteSessionBody({
 					disabled={busy}
 					className="rounded-sm border border-destructive/50 bg-destructive/10 px-3 py-1.5 text-xs text-destructive transition-colors hover:bg-destructive/20 disabled:opacity-40"
 				>
-					{busy ? "Deleting…" : "Delete"}
+					{busy ? "Удаление…" : "Удалить"}
 				</button>
 			</div>
 		</div>

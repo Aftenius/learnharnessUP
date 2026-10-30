@@ -22,7 +22,7 @@ function assertImageBoundary(holder: Element, source: string) {
 	assert.equal(holder.children.length, 1, "no figure markup alongside the image");
 	assert.equal(holder.querySelector("svg, style, script, foreignObject, a, [onload], [onclick]"), null,
 		"generated elements and CSS never enter the app document");
-	assert.equal(image.getAttribute("alt"), "Figure");
+	assert.equal(image.getAttribute("alt"), "Рисунок");
 	assert.equal(image.getAttribute("draggable"), "false", "native image dragging must not interfere with panning");
 	const src = image.getAttribute("src")!;
 	assert.ok(src.startsWith(PREFIX));
@@ -124,7 +124,7 @@ describe("generated SVG image boundary", () => {
 		const holder = document.querySelector("[data-lh-overlay-chart]")!;
 		assert.equal(assertImageBoundary(holder, FIGURE).className, "block h-auto w-full");
 		assert.match(holder.parentElement!.getAttribute("style")!, /width:320px/);
-		for (const label of ["Zoom in", "Zoom out", "Fit diagram to view", "Close"]) {
+		for (const label of ["Увеличить", "Уменьшить", "Вписать схему", "Закрыть"]) {
 			assert.ok(document.querySelector(`button[aria-label="${label}"]`));
 		}
 	});

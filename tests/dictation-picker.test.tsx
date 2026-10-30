@@ -11,7 +11,7 @@ let dispose: (() => Promise<void>) | undefined;
 let restore: (() => void) | undefined;
 const byTest = (id: string) => document.querySelector<HTMLButtonElement>(`[data-testid="${id}"]`)!;
 const trigger = () => byTest("dictation-language");
-const input = () => document.querySelector<HTMLInputElement>('input[aria-label="Search dictation languages"]')!;
+const input = () => document.querySelector<HTMLInputElement>('input[aria-label="Поиск языков диктовки"]')!;
 const menu = () => document.querySelector('[data-testid="dictation-language-menu"]');
 const click = async (element: HTMLElement) => { assert(element); await act(async () => { element.click(); }); };
 async function key(element: HTMLElement, value: string) {
@@ -154,7 +154,7 @@ test("empty results cannot save; Escape and outside click close the menu without
 	const f = await fixture();
 	await click(trigger());
 	await search("zzzz-no-language");
-	assert.match(menu()!.textContent!, /No languages match/);
+	assert.match(menu()!.textContent!, /Нет подходящих языков/);
 	await key(input(), "Enter");
 	assert.deepEqual(f.state.writes, []);
 	await key(input(), "Escape");
@@ -176,7 +176,7 @@ test("failed saves retain the confirmed choice and the same menu can retry", asy
 	await search("Polish");
 	await key(input(), "Enter");
 	assert.match(trigger().textContent!, /English/);
-	assert.match(menu()!.querySelector('[role="alert"]')!.textContent!, /Could not save/);
+	assert.match(menu()!.querySelector('[role="alert"]')!.textContent!, /Не удалось сохранить/);
 	f.state.failWrite = false;
 	await click(byTest("dictation-language-pl"));
 	assert.equal(menu(), null);
@@ -229,10 +229,10 @@ for (const source of ["none", "file", "env"] as const) test(`Language is below t
 	assert.equal(rows[0]!.getAttribute("data-testid"), "key-deepgram_api_key");
 	assert.equal(rows[1]!.getAttribute("data-testid"), "row-dictation-language");
 	assert.equal(rows[2]!.getAttribute("data-testid"), "dictation-setup-hint");
-	assert.equal(byTest("dictation-setup-hint").textContent, "Create a Deepgram API key with the Member role or higher, then add it above.");
+	assert.equal(byTest("dictation-setup-hint").textContent, "Нужен ключ API Deepgram с ролью Member или выше — добавьте его выше.");
 	assert.match(byTest("dictation-setup-hint").className, /text-muted-foreground/);
 	assert.equal(byTest("dictation-setup-hint").querySelector("a")!.href, "https://console.deepgram.com/");
-	assert.equal(byTest("dictation-setup-hint").querySelector("a")!.textContent, "Deepgram API key");
+	assert.equal(byTest("dictation-setup-hint").querySelector("a")!.textContent, "ключ API Deepgram");
 	assert.equal(byTest("dictation-setup-hint").querySelectorAll("a").length, 1);
 	assert.match(rows[1]!.querySelector(".font-prose")!.className, /text-\(length:--lh-prose-size\)/);
 	assert.equal(trigger().disabled, false, "language is independent of key ownership");
@@ -283,7 +283,7 @@ test("the shared model menu preserves ranking, provider identity, keyboard clamp
 	await search("no-model-matches", modelInput);
 	await key(modelInput, "Enter");
 	assert.equal(picked.length, 4);
-	assert.match(document.body.textContent!, /No models match/);
+	assert.match(document.body.textContent!, /Нет подходящих моделей/);
 });
 
 test("clearing each search restores the complete catalog order with Multilingual first", async () => {

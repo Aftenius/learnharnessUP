@@ -2,6 +2,7 @@ import { Type } from "typebox";
 import type { AgentTool } from "@earendil-works/pi-agent-core";
 import { serverExecute } from "../tool-execute.ts";
 import { getGraph, graphSessionIndex, graphSessionPropositions } from "../../core/graph.ts";
+import { rankNodes } from "../../core/local-embed.ts";
 import type { ChatStore, GraphStore } from "../../core/ports.ts";
 
 /**
@@ -73,6 +74,23 @@ export function proberGraphTools(ctx: GraphToolContext): Record<string, AgentToo
 				}
 				const lines = propositions.map((p) => `- ${p.name}`);
 				return `${propositions.length} proposition(s) covered in this session:\n${lines.join("\n")}`;
+			}),
+		},
+		search_propositions: {
+			name: "search_propositions",
+			label: "search_propositions",
+			description:
+				"Rank a few propositions whose wording is nearest a short query, using the local index. " +
+				"Returns id, name, statement, and score for the top matches only — never the whole graph. " +
+				"This does not replace the auditor's find tool.",
+			parameters: Type.Object({
+				query: Type.String({ minLength: 1, description: "What the learner is on about, in a few words." }),
+			}),
+			execute: serverExecute("search_propositions", Type.Object({ query: Type.String({ minLength: 1 }) }), async ({ query }): Promise<string> => {
+				const hits = rankNodes(getGraph(deps.graphStore).nodes, query);
+				if (hits.length === 0) return "No proposition ranked above zero for that query.";
+				const lines = hits.map((hit) => `- ${hit.id} ${hit.name} (${hit.score.toFixed(2)}): ${hit.statement}`);
+				return `${hits.length} proposition(s), nearest first:\n${lines.join("\n")}`;
 			}),
 		},
 	};

@@ -33,5 +33,5 @@ export function SvgImage({
 }) {
 	// The source is already an in-memory vector image; no Next image optimization.
 	// eslint-disable-next-line @next/next/no-img-element
-	return <img src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgImageSource(svg))}`} alt="Figure" className={className} width={width} draggable={false} />;
+	return <img src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgImageSource(svg))}`} alt="Рисунок" className={className} width={width} draggable={false} />;
 }

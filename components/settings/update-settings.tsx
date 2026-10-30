@@ -14,9 +14,9 @@ export type UpdateState = {
 
 export const APP_VERSION = process.env.LH_VERSION ?? "";
 const HOMEPAGE = process.env.LH_HOMEPAGE ?? "";
-export const MANUAL_UPDATE_HINT = "Checking downloads available updates. Downloaded updates install when you quit the app.";
-export const AUTO_UPDATE_HINT = "Check at startup and every 24 hours. Turning this off does not stop updates already in progress or ready to install.";
-const UPDATE_ERROR = "Couldn’t check for updates. Try again later.";
+export const MANUAL_UPDATE_HINT = "Проверка скачивает доступные обновления. Скачанные обновления устанавливаются при выходе из приложения.";
+export const AUTO_UPDATE_HINT = "Проверка при запуске и каждые 24 часа. Выключение не останавливает обновления, которые уже идут или готовы к установке.";
+const UPDATE_ERROR = "Не удалось проверить обновления. Попробуйте позже.";
 
 /** Subscribe before requesting the snapshot. IPC replies and pushes can
  * cross; a revision prevents an older reply from hiding a newer event.
@@ -46,10 +46,13 @@ export function useUpdateState() {
 
 export function updateStatusText(state: UpdateState | null): string | null {
 	switch (state?.status) {
-		case "checking": return "Checking for updates…";
-		case "downloading": return state.version ? `Downloading version ${state.version}…` : "Downloading an update…";
-		case "up-to-date": return "No newer version was found at the last check.";
-		case "downloaded": return `${state.version ? `Version ${state.version}` : "An update"} is ready. It will install when you quit the app.`;
+		case "checking": return "Проверка обновлений…";
+		case "downloading": return state.version ? `Загрузка версии ${state.version}…` : "Загрузка обновления…";
+		case "up-to-date": return "При последней проверке более новой версии не найдено.";
+		case "downloaded":
+			return state.version
+				? `Версия ${state.version} готова. Она установится при выходе из приложения.`
+				: "Обновление готово. Оно установится при выходе из приложения.";
 		case "error": return UPDATE_ERROR;
 		default: return null;
 	}
@@ -84,28 +87,28 @@ export function UpdateSettings({
 	return (
 		<>
 			<SettingsRow
-				label={`Version ${version || "unknown"}`}
+				label={`Версия ${version || "неизвестна"}`}
 				testid="row-version"
 				hint={
 					<>
 						{status && <span className="block" role="status" data-testid="update-status">{status}</span>}
 						{active && <span className="block">{MANUAL_UPDATE_HINT}</span>}
-						{releaseNotes && <a href={releaseNotes} target="_blank" rel="noopener noreferrer" className="underline-offset-2 hover:text-foreground hover:underline" data-testid="release-notes">Release notes</a>}
+						{releaseNotes && <a href={releaseNotes} target="_blank" rel="noopener noreferrer" className="underline-offset-2 hover:text-foreground hover:underline" data-testid="release-notes">Заметки о выпуске</a>}
 					</>
 				}
 			>
 				{active && (state.status === "downloaded" ? (
-					<Button type="button" size="xs" className="cursor-pointer" data-testid="update-restart" onClick={() => window.lh?.installUpdate?.()}>Restart</Button>
+					<Button type="button" size="xs" className="cursor-pointer" data-testid="update-restart" onClick={() => window.lh?.installUpdate?.()}>Перезапустить</Button>
 				) : (
 					<Button type="button" size="xs" variant="outline" className="cursor-pointer disabled:cursor-not-allowed" data-testid="update-check" disabled={busy} aria-busy={busy} onClick={check}>
-						{busy && <BrailleSpinner label={state.status === "downloading" ? "Downloading update" : "Checking for updates"} />}
-						Check for updates
+						{busy && <BrailleSpinner label={state.status === "downloading" ? "Загрузка обновления" : "Проверка обновлений"} />}
+						Проверить обновления
 					</Button>
 				))}
 			</SettingsRow>
 			{active && (
-				<SettingsRow label="Automatic updates" hint={AUTO_UPDATE_HINT} testid="row-auto-update">
-					<Toggle checked={autoUpdate} label="auto update" onChange={onAutoUpdateChange} />
+				<SettingsRow label="Автообновление" hint={AUTO_UPDATE_HINT} testid="row-auto-update">
+					<Toggle checked={autoUpdate} label="автообновление" testid="toggle-auto-update" onChange={onAutoUpdateChange} />
 				</SettingsRow>
 			)}
 		</>

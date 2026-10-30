@@ -108,7 +108,7 @@ describe("ChainTableBody — clusters (the outermost layer)", () => {
 
 	it("an unnameable CONCLUSION birth forms one honest muted unlabeled group", () => {
 		const html = render();
-		assert.ok(html.includes("unlabeled"), "the muted label");
+		assert.ok(html.includes("без подписи"), "the muted label");
 		// orphan (birth null) concludes its own singleton chain → the group exists;
 		// d (also birth null) is a premise of e and never forms one
 		assert.ok(html.includes('data-testid="chain-row-orphan"') === false, "collapsed, like every group");
@@ -120,7 +120,7 @@ describe("ChainTableBody — clusters (the outermost layer)", () => {
 		// chat1: chains c1 (a, b, c1) + solo (solo) → 4 member ids
 		assert.ok(html.includes(">4</span>"), "chat1's proposition count");
 		assert.ok(html.includes("2026-09-20"), "the newest-member date");
-		assert.ok(html.includes(">notes</span>"), "the notes kind tag");
+		assert.ok(html.includes(">заметки</span>"), "the notes kind tag");
 	});
 });
 
@@ -194,8 +194,8 @@ describe("ChainTableBody — chain rows (chips + connectors)", () => {
 		assert.ok(!html.includes('data-testid="chain-arrow-solo-1"'), "no connector on a singleton");
 		// the visible line is the chip alone; "(no premises)" exists ONLY as the
 		// row's aria-label (the a11y one-liner) — exactly one occurrence
-		assert.equal(html.split("no premises").length - 1, 1, "aria-label only, never visible text");
-		assert.ok(html.includes('aria-label="Standalone (no premises)"'));
+		assert.equal(html.split("без посылок").length - 1, 1, "aria-label only, never visible text");
+		assert.ok(html.includes('aria-label="Standalone (без посылок)"'));
 	});
 
 	it("the row carries the one-line derivation as its aria-label (core formatChainLine)", () => {
@@ -270,7 +270,7 @@ describe("ChainTableBody — the floating selection bar (never shifts layout)", 
 		const html = render({ selection: new Set(["a", "b", "c1"]) });
 		assert.ok(html.includes('data-testid="chain-selection-bar"'));
 		assert.ok(html.includes('data-testid="chain-selected-summary"'));
-		assert.ok(html.includes("3 nodes → 1 chain"));
+		assert.ok(html.includes("3 узла → 1 цепочка"));
 		assert.ok(html.includes('data-testid="chain-clear"'));
 		// The danger fence (owner, 2026-09-29 night): a divider quarantines
 		// the destructive action at the bar's right end, red + trash icon,
@@ -278,7 +278,7 @@ describe("ChainTableBody — the floating selection bar (never shifts layout)", 
 		assert.ok(html.includes('data-testid="chain-danger-divider"'));
 		const del = html.match(/<button[^>]*data-testid="chain-delete"[^>]*>/)?.[0] ?? "";
 		assert.match(del, /border-destructive\/50/); // the destructive pair
-		assert.match(del, /aria-label="Delete 3 selected nodes"/);
+		assert.match(del, /aria-label="Удалить 3 выбранных узла"/);
 		assert.ok(html.includes("lucide-trash-2"), "the trash icon");
 		// the fence is before Delete in the DOM (right end of the bar)
 		assert.ok(html.indexOf('chain-danger-divider"') < html.indexOf('chain-delete"'));
@@ -292,7 +292,7 @@ describe("ChainTableBody — the floating selection bar (never shifts layout)", 
 
 	it("a premise WITHOUT its conclusion derives as the singleton it becomes", () => {
 		const html = render({ selection: new Set(["a", "d"]) });
-		assert.ok(html.includes("2 nodes → 2 chains"), "no follows-edge survives inside the selection");
+		assert.ok(html.includes("2 узла → 2 цепочки"), "no follows-edge survives inside the selection");
 	});
 });
 
@@ -311,13 +311,13 @@ describe("ChainTableBody — the fuzzy search (grouped + auto-expand)", () => {
 		assert.ok(!html.includes("cluster-group-notes1") === false, "notes1 still renders (it has a match)");
 		assert.ok(!html.includes("Ethics lesson") === false, "chat1 still renders (it has a match)");
 		// the floating bar is never search-filtered
-		assert.ok(html.includes("3 nodes → 1 chain"));
+		assert.ok(html.includes("3 узла → 1 цепочка"));
 	});
 
 	it("no matches: the honest empty line", () => {
 		const html = render({ query: "qqqq" });
 		assert.ok(html.includes('data-testid="chain-table-nomatch"'));
-		assert.ok(html.includes("No matching chains."));
+		assert.ok(html.includes("Нет подходящих цепочек."));
 	});
 });
 
@@ -338,7 +338,7 @@ describe("ChainTableOverlay — the lifted practice pick (owner vision, 2026-10-
 
 	it("CONTROLLED selection renders the caller's set — the bar counts it live", () => {
 		const html = overlay({ controlledSelection: new Set(["a", "b", "c1"]) });
-		assert.ok(html.includes("3 nodes → 1 chain"), "the bar reflects the lifted set, not internal state");
+		assert.ok(html.includes("3 узла → 1 цепочка"), "the bar reflects the lifted set, not internal state");
 	});
 
 	it("select mode: Done replaces the delete fence — no way to delete while picking", () => {
@@ -347,7 +347,7 @@ describe("ChainTableOverlay — the lifted practice pick (owner vision, 2026-10-
 			controlledSelection: new Set(["a", "b"]),
 		});
 		assert.ok(html.includes('data-testid="chain-practice-done"'));
-		assert.ok(html.includes("Done"));
+		assert.ok(html.includes("Готово"));
 		assert.ok(!html.includes('data-testid="chain-delete"'), "no delete while picking");
 		assert.ok(!html.includes('data-testid="chain-danger-divider"'));
 	});

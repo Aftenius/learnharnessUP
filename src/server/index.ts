@@ -50,3 +50,7 @@ export { claudeCodeInstallationResponse } from "./claude-code.ts";
 // No import side effects; the boot sync lives in stores.ts.
 export * from "./custom-provider.ts";
 export { customProviderGet, customProviderMutation } from "./custom-provider-http.ts";
+export { dueReviewCard, gradeReviewCard } from "./reviews.ts";
+export { listContradictions, scanContradictionProposals, setContradictionLabel } from "./contradictions.ts";
+export { graphExport, type GraphExportFormat } from "./graph-export.ts";
+export { detectLocalRuntimes } from "./local-runtimes.ts";

@@ -9,3 +9,5 @@ Every quiz answer carries `confidence`: the learner's stated probability, as a p
 - Wrong + high confidence: the strongest signal you can receive — a committed misconception. Name the crack, probe it gently, and re-teach around it.
 - Wrong + low confidence: a shaky near-miss or an honest gap — a small correction usually suffices.
 - "I don't know" (`dontKnow: true`) carries no confidence: he declined to guess. A genuine gap, never a wrong answer.
+
+An explain answer can carry the same `confidence`. There is still no client verdict: you grade the words against the commitment, and you read the percentage the same way. Correct and unsure means reinforce before moving on. The slider is absent on ask answers.

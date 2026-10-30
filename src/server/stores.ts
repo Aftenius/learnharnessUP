@@ -7,8 +7,10 @@
  */
 
 import { chatStore } from "../store/chats.ts";
+import { contradictionStore } from "../store/contradictions.ts";
 import { graphStore } from "../store/graph.ts";
 import { jobStore } from "../store/jobs.ts";
+import { reviewStore } from "../store/reviews.ts";
 import { settingsStore } from "../store/settings.ts";
 import { resolveSettings, type EffectiveSettings } from "../core/settings-resolution.ts";
 import { syncCustomProvider } from "./custom-provider.ts";
@@ -18,6 +20,8 @@ export const stores = {
 	graphStore,
 	jobStore,
 	settingsStore,
+	reviewStore,
+	contradictionStore,
 };
 
 export type Stores = typeof stores;

@@ -84,3 +84,12 @@ export * from "./coverage.ts";
 // ONE session→markdown formatter — the extractor's view and the user-facing
 // export share it. Pure, browser-safe.
 export * from "./session-markdown.ts";
+export * from "./pedagogy.ts";
+export * from "./model-tier.ts";
+export * from "./critic.ts";
+export * from "./sm2.ts";
+export * from "./contradictions.ts";
+export * from "./local-embed.ts";
+export * from "./local-presets.ts";
+export * from "./snippet.ts";
+export * from "./graph-export.ts";

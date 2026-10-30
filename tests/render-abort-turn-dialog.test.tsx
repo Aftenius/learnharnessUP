@@ -15,19 +15,19 @@ describe("AbortTurnBody", () => {
 			<AbortTurnBody mode="turn" onClose={() => {}} onConfirm={() => {}} />,
 		);
 		assert.ok(html.includes('data-testid="abort-turn-dialog"'));
-		assert.match(html, /Abort this turn\?/);
-		assert.match(html, /The partial answer stays in the transcript\./);
-		assert.match(html, /Cancel/);
-		assert.match(html, /Abort/);
+		assert.match(html, /Прервать этот вызов\?/);
+		assert.match(html, /Частичный ответ остаётся в стенограмме\./);
+		assert.match(html, /Отмена/);
+		assert.match(html, /Прервать/);
 	});
 
 	it("question mode: names the dismissal, the skip, Dismiss", () => {
 		const html = renderToStaticMarkup(
 			<AbortTurnBody mode="question" onClose={() => {}} onConfirm={() => {}} />,
 		);
-		assert.match(html, /Dismiss this question\?/);
-		assert.match(html, /Skipped — the teacher moves on without it\./);
-		assert.match(html, /Dismiss/);
+		assert.match(html, /Скрыть этот вопрос\?/);
+		assert.match(html, /Пропущено — преподаватель идёт дальше без него\./);
+		assert.match(html, /Скрыть/);
 		// the abort copy must not leak into the dismissal mode
 		assert.ok(!html.includes("Abort this turn"));
 	});

@@ -3,11 +3,12 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useBackdropDismiss } from "@/components/backdrop-dismiss";
+import { ruCount } from "@/components/ru";
 
 /** The 409 extraction_running line (owner phrasing, node interlude):
  *  the server's error names the extraction; the ACTIVITY DOCK is the
  *  surface the user actually watches drain. Exported pure for pins. */
-export const EXTRACTION_RETRY_LINE = "An extraction is running — try again when the activity dock drains.";
+export const EXTRACTION_RETRY_LINE = "Идёт извлечение — повторите, когда панель активности опустеет.";
 
 /**
  * Node deletion (node interlude, Platform's 50bfcba engine) — the
@@ -49,13 +50,13 @@ export function DeleteNodeBody({
 		<div
 			role="dialog"
 			aria-modal="true"
-			aria-label="Delete node"
+			aria-label="Удалить узел"
 			data-testid="delete-node-dialog"
 			onClick={(e) => e.stopPropagation()}
 			className="w-[32rem] max-w-[calc(100vw-2rem)] rounded-xl border bg-card p-5 shadow-xl"
 		>
 			<h2 className="text-sm font-semibold text-destructive">
-				{nodes.length === 1 ? "Delete node?" : `Delete ${nodes.length} nodes?`}
+				{nodes.length === 1 ? "Удалить узел?" : `Удалить ${ruCount(nodes.length, "узел", "узла", "узлов")}?`}
 			</h2>
 			{/* The node name(s) below the title in JetBrains Mono (owner,
 			    2026-09-24): the name is the payload — mono suits it, and
@@ -74,14 +75,14 @@ export function DeleteNodeBody({
 				) : (
 					<code data-testid="node-names-code" className="font-mono text-sm text-foreground">
 						{nodes.slice(0, 8).map((n) => n.name).join(", ")}
-						{nodes.length > 8 ? `, and ${nodes.length - 8} more` : ""}
+						{nodes.length > 8 ? `, и ещё ${ruCount(nodes.length - 8, "узел", "узла", "узлов")}` : ""}
 					</code>
 				)}
 			</div>
 			<p className="mt-2 text-sm text-muted-foreground" data-testid="node-permanence-line">
 				{nodes.length === 1
-					? "This permanently deletes the node — this cannot be undone."
-					: `This permanently deletes all ${nodes.length} nodes — this cannot be undone.`}
+					? "Узел удаляется навсегда — отменить нельзя."
+					: `Все ${ruCount(nodes.length, "узел", "узла", "узлов")} удаляются навсегда — отменить нельзя.`}
 			</p>
 			{failure && (
 				<div
@@ -99,7 +100,7 @@ export function DeleteNodeBody({
 						disabled={busy}
 						className="ml-3 text-xs text-foreground underline-offset-2 hover:underline disabled:opacity-40"
 					>
-						Try again
+						Повторить
 					</button>
 				</div>
 			)}
@@ -111,7 +112,7 @@ export function DeleteNodeBody({
 					disabled={busy}
 					className="rounded-sm px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40"
 				>
-					Cancel
+					Отмена
 				</button>
 				<button
 					type="button"
@@ -123,7 +124,7 @@ export function DeleteNodeBody({
 					// refusal banner): border + text, fill on hover.
 					className="rounded-sm border border-destructive/50 bg-destructive/10 px-3 py-1.5 text-xs text-destructive transition-colors hover:bg-destructive/20 disabled:opacity-40"
 				>
-					{busy ? "Deleting…" : "Delete"}
+					{busy ? "Удаление…" : "Удалить"}
 				</button>
 			</div>
 		</div>
@@ -197,7 +198,7 @@ export function DeleteNodeDialog({
 					graphRevision?: number;
 				};
 				if (!res.ok) {
-					setFailure({ code: body.code ?? "error", error: body.error ?? `Delete failed (${res.status})` });
+					setFailure({ code: body.code ?? "error", error: body.error ?? `Не удалось удалить (${res.status})` });
 					setBusy(false);
 					if (dead.length > 0) onDeleted(dead, revision);
 					return;
@@ -207,7 +208,7 @@ export function DeleteNodeDialog({
 			}
 			onDeleted(dead, revision);
 		} catch {
-			setFailure({ code: "network", error: "Delete failed — network error. Try again." });
+			setFailure({ code: "network", error: "Не удалось удалить — ошибка сети. Повторите." });
 			setBusy(false);
 			if (dead.length > 0) onDeleted(dead, revision);
 		}

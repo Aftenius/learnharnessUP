@@ -475,6 +475,14 @@ function projectMarker(marker: LhMarkerMessage, out: LhViewMessage[]): void {
 			});
 			return;
 		}
+		case "critic-note": {
+			out.push({
+				id: marker.id,
+				role: "user",
+				parts: [{ type: "data-critic-note", id: `cv_${marker.id}`, data: marker.details }],
+			});
+			return;
+		}
 		case "plan-block": {
 			// No message of its own: splice into the preceding assistant
 			// group, IN FLOW after the last successful plan_init call.

@@ -29,10 +29,30 @@ import {
 import { SettingsRow } from "./controls.tsx";
 
 const SCOPES: { scope: KeyScope; label: string }[] = [
-	{ scope: "global", label: "Global" },
-	{ scope: "chat", label: "Chat" },
-	{ scope: "graph", label: "Graph" },
+	{ scope: "global", label: "Глобальные" },
+	{ scope: "chat", label: "Чат" },
+	{ scope: "graph", label: "Граф" },
 ];
+
+const ACTION_LABELS: Record<KeyAction, string> = {
+	"toggle-dictation": "Диктовка",
+	"open-settings": "Открыть настройки",
+	"open-model-picker": "Выбор модели",
+	"cycle-thinking": "Уровень рассуждения",
+	"toggle-sidebar": "Боковая панель сессий",
+	"sessions-search": "Поиск сессий",
+	"jump-graph": "Граф",
+	"new-session": "Новая сессия",
+	"rename-session": "Переименовать сессию",
+	"toggle-user-thinking": "Все ваши рассуждения",
+	"find": "Найти",
+	"cheat-sheet": "Шпаргалка сочетаний",
+	"question-focus": "Вопрос · рассуждение ↔ строки",
+	"question-next-row": "Вопрос · следующая строка",
+	"question-prev-row": "Вопрос · предыдущая строка",
+	"question-pick-row": "Вопрос · выбрать строку",
+	"question-submit": "Вопрос · отправить",
+};
 
 /** The overrides map after ONE change (pure — exported for tests):
  *  binding null = reset the action to its default (key removed). */
@@ -108,13 +128,13 @@ export function KeyboardSection() {
 								return (
 									<SettingsRow
 										key={def.id}
-										label={def.label}
-										hint={def.displayOnly ? "Fixed — part of this screen" : undefined}
+										label={ACTION_LABELS[def.id]}
+										hint={def.displayOnly ? "Фиксировано — часть этого экрана" : undefined}
 										testid={`kbd-row-${def.id}`}
 									>
 										<span className="flex items-center gap-2">
 											<kbd className="rounded-sm border border-border bg-muted px-1.5 py-0.5 font-ui text-xs">
-												{rebinding === def.id ? "Press keys…" : formatBinding(effective)}
+												{rebinding === def.id ? "Нажмите клавиши…" : formatBinding(effective)}
 											</kbd>
 											{def.displayOnly ? null : rebinding === def.id ? (
 												<button
@@ -122,7 +142,7 @@ export function KeyboardSection() {
 													onClick={() => setRebinding(null)}
 													className="text-xs text-muted-foreground/70 underline-offset-2 hover:text-foreground hover:underline"
 												>
-													Cancel
+													Отмена
 												</button>
 											) : (
 												<>
@@ -132,7 +152,7 @@ export function KeyboardSection() {
 														data-testid={`kbd-rebind-${def.id}`}
 														className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
 													>
-														Rebind
+														Переназначить
 													</button>
 													{overridden(def.id) && (
 														<button
@@ -141,7 +161,7 @@ export function KeyboardSection() {
 															data-testid={`kbd-reset-${def.id}`}
 															className="text-xs text-muted-foreground/70 underline-offset-2 hover:text-foreground hover:underline"
 														>
-															Reset
+															Сбросить
 														</button>
 													)}
 												</>
@@ -155,14 +175,14 @@ export function KeyboardSection() {
 				);
 			})}
 			<div className="mt-1 flex items-center justify-between">
-				<span className="text-xs text-muted-foreground/70">Stored on this device (lh:keymap) — overrides only.</span>
+				<span className="text-xs text-muted-foreground/70">Хранится на этом устройстве (lh:keymap) — только замены.</span>
 				<button
 					type="button"
 					onClick={resetAll}
 					data-testid="kbd-reset-all"
 					className="text-xs text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
 				>
-					Reset all to defaults
+					Сбросить всё к исходным
 				</button>
 			</div>
 		</>

@@ -39,7 +39,7 @@ export function PdfBriefCard({ output }: { output: unknown }) {
 	if (!result || typeof result.brief !== "string") {
 		return (
 			<div className="rounded-xl border bg-card p-4 text-sm text-muted-foreground">
-				PDF reading completed, but the result could not be displayed.
+				Чтение PDF завершено, но результат не удалось показать.
 			</div>
 		);
 	}
@@ -52,20 +52,20 @@ export function PdfBriefCard({ output }: { output: unknown }) {
 	return (
 		<div className="rounded-xl border bg-card p-4 text-card-foreground" data-testid="pdf-brief-card">
 			<div className="mb-1 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-				PDF brief
-				{failed && <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-red-500">failed</span>}
+				Сводка PDF
+				{failed && <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-red-500">ошибка</span>}
 			</div>
 			<div className="text-sm [&_p:first-child]:mt-0 [&_p:last-child]:mb-0">
 				<MessageResponse>{result.brief}</MessageResponse>
 			</div>
 			{!failed && readList.length > 0 && (
 				<div className="mt-3 border-t pt-2 text-xs text-muted-foreground">
-					Pages read: {readList.join(", ")}
+					Прочитанные страницы: {readList.join(", ")}
 				</div>
 			)}
 			{!failed && consultedList.length > readList.length && (
 				<div className="mt-3 border-t pt-2 text-xs text-muted-foreground">
-					Pages consulted: {consultedList.join(", ")}
+					Просмотренные страницы: {consultedList.join(", ")}
 				</div>
 			)}
 		</div>
@@ -81,7 +81,7 @@ export function ResearchBriefCard({ output }: { output: unknown }) {
 	if (!result || typeof result.brief !== "string") {
 		return (
 			<div className="rounded-xl border bg-card p-4 text-sm text-muted-foreground">
-				Research completed, but the result could not be displayed.
+				Исследование завершено, но результат не удалось показать.
 			</div>
 		);
 	}
@@ -89,15 +89,15 @@ export function ResearchBriefCard({ output }: { output: unknown }) {
 	return (
 		<div className="rounded-xl border bg-card p-4 text-card-foreground" data-testid="research-brief-card">
 			<div className="mb-1 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-				Research brief
-				{failed && <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-red-500">failed</span>}
+				Сводка исследования
+				{failed && <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-red-500">ошибка</span>}
 			</div>
 			<div className="text-sm [&_p:first-child]:mt-0 [&_p:last-child]:mb-0">
 				<MessageResponse>{result.brief}</MessageResponse>
 			</div>
 			{result.sources.length > 0 && (
 				<div className="mt-3 border-t pt-2">
-					<div className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Sources</div>
+					<div className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Источники</div>
 					<ul className="flex flex-col gap-0.5 text-xs">
 						{result.sources.map((s) => (
 							<li key={s.url} className="truncate">

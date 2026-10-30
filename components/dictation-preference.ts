@@ -75,7 +75,7 @@ export function createDictationLanguageStore(request: typeof fetch, saved: () =>
 				saved();
 				return true;
 			} catch {
-				publish({ error: "Could not save dictation language. Try again." });
+				publish({ error: "Не удалось сохранить язык диктовки. Попробуйте ещё раз." });
 				return false;
 			} finally {
 				writing = null;

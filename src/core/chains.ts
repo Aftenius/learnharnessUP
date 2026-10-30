@@ -89,5 +89,5 @@ export function formatChainLine(
 	const premises = [...chain.premises].sort().map(nameOf).join(", ");
 	return premises !== ""
 		? `${premises} → ${nameOf(chain.conclusion)}`
-		: `${nameOf(chain.conclusion)} (no premises)`;
+		: `${nameOf(chain.conclusion)} (без посылок)`;
 }

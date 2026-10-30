@@ -281,12 +281,12 @@ describe("keyStatusLine — the minimal at-a-glance state", () => {
 	it("env-owned key carries the 'env' marker (the row renders read-only)", () => {
 		assert.equal(
 			keyStatusLine({ id: "X", info: null, present: true, masked: "…ca10 (73 chars)", source: "env", shadowedByEnv: false }),
-			"…ca10 · 73 · env",
+			"…ca10 · 73 · окружение",
 		);
 	});
 
-	it("absent key reads 'not set'", () => {
-		assert.equal(keyStatusLine({ id: "X", info: null, present: false, masked: null, source: "none", shadowedByEnv: false }), "not set");
+	it("absent key reads 'не задан'", () => {
+		assert.equal(keyStatusLine({ id: "X", info: null, present: false, masked: null, source: "none", shadowedByEnv: false }), "не задан");
 	});
 });
 
@@ -365,12 +365,12 @@ describe("sectionedSegments — the prompts overhaul (2026-09-26)", () => {
 		// assembly order: the base file first, then the shared fragments
 		assert.deepEqual(shared.segments.map((s) => s.path), ["system-prompt.md", "shared/10-personality.md"]);
 		// the Shared header carries the one hint that earns its place
-		assert.equal(shared.hint, "Used by both agents");
+		assert.equal(shared.hint, "Используется обоими агентами");
 		assert.equal(teacher.hint, undefined);
 	});
 
 	it("the indicator copy is pinned — it states WHICH VERSION IS IN USE (refined 2026-09-26)", () => {
-		assert.equal(PROMPT_IN_USE_HINT, "Your version is in use");
+		assert.equal(PROMPT_IN_USE_HINT, "Используется ваша версия");
 	});
 });
 

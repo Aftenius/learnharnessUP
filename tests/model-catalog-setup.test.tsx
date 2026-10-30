@@ -95,9 +95,9 @@ test("cached setup is immediately usable; fresh metadata/untouched slots update 
 	fresh.models[1] = { ...b, supportedLevels: ["off", "medium", "high"] };
 	await answer(1, fresh);
 	assert.equal(element("setup-trigger-strong").textContent, "claude-opus-5-5▾");
-	assert.equal(element("setup-thinking-strong").textContent?.trim(), "medium▾");
+	assert.equal(element("setup-thinking-strong").textContent?.trim(), "средний▾");
 	assert.equal(element("setup-trigger-cheap").textContent, "claude-opus-5-5▾");
-	await click("setup-thinking-strong"); assert.deepEqual(levels(), ["off", "medium✓", "high"]);
+	await click("setup-thinking-strong"); assert.deepEqual(levels(), ["Выкл.", "средний✓", "высокий"]);
 	await click("setup-thinking-strong");
 	await act(async () => snapshot.refresh()); await answer(2, null);
 	assert.ok(element("setup-catalog-error")); assert.equal(element("setup-save").hasAttribute("disabled"), false);
@@ -159,7 +159,7 @@ for (const count of [0, 1, 2]) test(`connecting with ${count} saved slots only r
 		if (before.slots[slot]) continue;
 		await click(`setup-trigger-${slot}`); await click("model-option-claude-opus-5-5");
 	}
-	if (count > 0) assert.equal(element("setup-thinking-strong").textContent?.trim(), "xhigh▾");
+	if (count > 0) assert.equal(element("setup-thinking-strong").textContent?.trim(), "очень высокий▾");
 	await click("setup-save");
 	for (const slot of ["strong", "cheap", "vision"] as const) {
 		if (before.slots[slot]) assert.deepEqual(writes[0]?.[slot], before.slots[slot]);
@@ -176,10 +176,10 @@ test("a partial setup's model/thinking edits survive exclusive provider recovery
 	assert.ok(element("setup-stage-keys")); assert.equal(document.querySelector('[data-testid="setup-stage-pickers"]'), null);
 	await act(async () => notifySettingsSaved("keys")); await answer(3, before);
 	assert.equal(element("setup-trigger-strong").textContent, "claude-opus-5-5▾");
-	assert.equal(element("setup-thinking-strong").textContent?.trim(), "medium▾");
+	assert.equal(element("setup-thinking-strong").textContent?.trim(), "средний▾");
 	await render(<Reader />); await render(<><Reader />{setup()}</>);
 	assert.equal(element("setup-trigger-strong").textContent, "model:free▾");
-	assert.equal(element("setup-thinking-strong").textContent?.trim(), "low▾"); await answer(4, before);
+	assert.equal(element("setup-thinking-strong").textContent?.trim(), "низкий▾"); await answer(4, before);
 });
 
 test("Agent opens with cached thinking metadata; refresh and disconnect never clear saved levels", async () => {
@@ -187,11 +187,11 @@ test("Agent opens with cached thinking metadata; refresh and disconnect never cl
 	const models: ModelsSettings = { strong: { model: { provider: a.provider, id: a.id }, thinkingLevel: "low" } };
 	let changed: ModelsSettings | undefined;
 	await render(<><Reader /><AgentSection agent={undefined} models={models} graph={undefined} compaction={undefined} onSectionChange={() => {}} onModelsChange={(next) => { changed = next; }} onCompactionChange={() => {}} /></>);
-	await click("slot-thinking-strong"); assert.deepEqual(levels(), ["off", "low✓", "high"]);
+	await click("slot-thinking-strong"); assert.deepEqual(levels(), ["Выкл.", "низкий✓", "высокий"]);
 	assert.equal(element("slot-model-strong").textContent, "model:free▾");
 	await answer(1, catalog());
 	await act(async () => notifySettingsSaved("keys")); await answer(2, catalog(false));
-	assert.equal(element("slot-thinking-strong").textContent, "low▾");
+	assert.equal(element("slot-thinking-strong").textContent, "низкий▾");
 	await click("thinking-option-xhigh"); assert.equal(changed?.strong?.thinkingLevel, "xhigh"); assert.equal(changed?.strong?.model?.id, a.id);
 });
 

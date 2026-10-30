@@ -19,7 +19,7 @@ export interface NotesImportResult {
 /** Validate the entire response before applying any row: a malformed index
  * must never attribute another file's success to this file (same names included). */
 export function parseNotesImportResults(body: unknown, files: readonly File[]): NotesImportResult[] {
-	const invalid = () => new Error("Invalid import response. Please retry the file.");
+	const invalid = () => new Error("Некорректный ответ импорта. Повторите отправку файла.");
 	if (!body || typeof body !== "object" || !("results" in body) || !Array.isArray(body.results) || body.results.length !== files.length) throw invalid();
 	const seen = new Set<number>();
 	for (const raw of body.results) {
@@ -43,10 +43,10 @@ export async function postNotesImport(files: readonly File[]): Promise<NotesImpo
 	const response = await fetch("/api/graph/import", { method: "POST", body: form });
 	let body: unknown;
 	try { body = await response.json(); }
-	catch { throw new Error("Invalid import response. Please retry the file."); }
+	catch { throw new Error("Некорректный ответ импорта. Повторите отправку файла."); }
 	if (!response.ok) {
 		const detail = body && typeof body === "object" && "error" in body && typeof body.error === "string" ? `: ${body.error}` : "";
-		throw new Error(`Import request failed (HTTP ${response.status})${detail}. Please retry the file.`);
+		throw new Error(`Запрос импорта не удался (HTTP ${response.status})${detail}. Повторите отправку файла.`);
 	}
 	return parseNotesImportResults(body, files);
 }

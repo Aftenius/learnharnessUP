@@ -159,7 +159,7 @@ describe("setup polish interactions", () => {
 
 	it("model and thinking dropdowns keep outside-click dismissal and model guidance uses two sentences", async () => {
 		await mount({ keyed: true });
-		assert.equal(element('[data-testid="setup-stage-pickers"] > p').textContent, "Pick the model for each tier. All three are required before chats can start.");
+		assert.equal(element('[data-testid="setup-stage-pickers"] > p').textContent, "Выберите модель для каждого уровня. Все три обязательны, чтобы начать чаты.");
 		await click(element('[data-testid="setup-trigger-strong"]'));
 		await click(element('[data-testid="setup-dialog"] h2'));
 		assert.equal(document.querySelector('[data-testid="setup-menu-strong"]'), null);
@@ -180,11 +180,11 @@ describe("setup polish interactions", () => {
 		// image input; only custom models stay selectable when capability is unknown).
 		const menu = element('[data-testid="setup-menu-vision"]');
 		assert.ok(!menu.textContent?.includes("fixture-text"));
-		assert.ok(menu.textContent?.includes("No models match."));
+		assert.ok(menu.textContent?.includes("Нет подходящих моделей."));
 	});
 
 	it("catalog failure uses the approved two-sentence error", async () => {
 		await mount({ catalogFails: true });
-		assert.ok(element('[data-testid="setup-dialog"]').textContent?.includes("Model catalog could not be loaded. Check the connection and retry."));
+		assert.ok(element('[data-testid="setup-dialog"]').textContent?.includes("Не удалось загрузить каталог моделей. Проверьте соединение и повторите."));
 	});
 });

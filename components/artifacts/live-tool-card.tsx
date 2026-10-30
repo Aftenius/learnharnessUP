@@ -20,6 +20,21 @@ import type { ArtifactPartProps } from "@/src/core";
  * The one working-state grammar everywhere (owner): Braille spinner +
  * Shimmer(duration 1) — the thinking row, this card, the sidebar row.
  */
+const ACTIVITY_RU: Record<string, string> = {
+	"Reading a file…": "Читаем файл…",
+	"Listing a directory…": "Смотрим каталог…",
+	"Finding files…": "Ищем файлы…",
+	"Searching file contents…": "Ищем по содержимому…",
+	"Dispatching research…": "Отправляем исследование…",
+	"Building a demo…": "Собираем демо…",
+	"Making a visual…": "Делаем рисунок…",
+	"Reading a PDF…": "Читаем PDF…",
+	"Drawing up the plan…": "Составляем план…",
+	"Concluding the assessment…": "Завершаем оценку…",
+	"Writing a question…": "Пишем вопрос…",
+	"Working…": "Работаем…",
+};
+
 interface StreamingToolPart {
 	type: string;
 	state: string;
@@ -39,6 +54,8 @@ export function LiveToolCard({ part }: ArtifactPartProps) {
 	else if (typeof inp.session === "string" && inp.session) arg = inp.session;
 
 	const hasInput = p.input != null && Object.keys(inp).length > 0;
+	const activityEn = toolActivityLabel(tool);
+	const activity = ACTIVITY_RU[activityEn] ?? activityEn;
 
 	return (
 		<details
@@ -47,15 +64,15 @@ export function LiveToolCard({ part }: ArtifactPartProps) {
 			className="group my-1 w-full max-w-2xl select-none"
 		>
 			<summary className="flex cursor-pointer list-none items-center gap-2 text-xs text-muted-foreground [&::-webkit-details-marker]:hidden">
-				<BrailleSpinner label={`${toolActivityLabel(tool)} — live`} />
+				<BrailleSpinner label={`${activity} — в работе`} />
 				<Shimmer duration={1} className="text-xs">
-					{toolActivityLabel(tool)}
+					{activity}
 				</Shimmer>
 				{arg && <span className="truncate">{arg}</span>}
 				<ChevronRight className="size-3 shrink-0 opacity-50 transition-transform group-open:rotate-90" />
 			</summary>
 			<div className="mt-2 rounded-xl border bg-card p-3 text-xs">
-				<div className="mb-1 font-medium uppercase tracking-wide text-muted-foreground">Input (streaming)</div>
+				<div className="mb-1 font-medium uppercase tracking-wide text-muted-foreground">Ввод (поток)</div>
 				<pre className="max-h-32 overflow-auto whitespace-pre-wrap break-all font-mono text-[11px] leading-relaxed">
 					{hasInput ? JSON.stringify(p.input, null, 2) : "…"}
 				</pre>

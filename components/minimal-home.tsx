@@ -21,8 +21,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ListTreeIcon, UploadIcon } from "lucide-react";
 import { ChainTableOverlay } from "@/components/chain-table.tsx";
+import { GraphExchange } from "@/components/graph-exchange";
 import { GraphCostControl } from "@/components/graph-view.tsx";
 import { NotesImportErrors, useNotesImport } from "@/components/notes-import.tsx";
+import { ruCount } from "@/components/ru";
 import { Hint } from "@/components/ui/hint";
 import type { ChatSummary, GraphCostSummary, GraphSnapshot } from "@/src/core";
 
@@ -52,28 +54,28 @@ export function KnowledgeSummary({
 			    list) rides after the same parting. */}
 			<div className="flex flex-col gap-1">
 				<p className="font-ui text-sm text-muted-foreground">
-					{propositions} {propositions === 1 ? "proposition" : "propositions"}
+					{ruCount(propositions, "утверждение", "утверждения", "утверждений")}
 				</p>
 				<p className="font-ui text-sm text-muted-foreground">
-					{chains} {chains === 1 ? "chain" : "chains"}
+					{ruCount(chains, "цепочка", "цепочки", "цепочек")}
 				</p>
 			</div>
 			<div className="h-4" aria-hidden="true" />
 			<div className="flex flex-col gap-1">
 				<p className="font-ui text-sm text-muted-foreground">
-					{teachSessions} {teachSessions === 1 ? "teaching session" : "teaching sessions"}
+					{ruCount(teachSessions, "учебная сессия", "учебные сессии", "учебных сессий")}
 				</p>
 				<p className="font-ui text-sm text-muted-foreground">
-					{practiceSessions} {practiceSessions === 1 ? "practice session" : "practice sessions"}
+					{ruCount(practiceSessions, "сессия практики", "сессии практики", "сессий практики")}
 				</p>
 			</div>
 			<div className="h-4" aria-hidden="true" />
 			<p className="font-ui text-sm text-muted-foreground">
-				{importedNotes} {importedNotes === 1 ? "imported note" : "imported notes"}
+				{ruCount(importedNotes, "импортированная заметка", "импортированные заметки", "импортированных заметок")}
 			</p>
 			{empty && (
 				<p className="pt-2 font-ui text-xs text-muted-foreground/70">
-					Nothing here yet — import notes to begin building the graph.
+					Пока пусто — импортируйте заметки, чтобы начать граф.
 				</p>
 			)}
 		</div>
@@ -167,7 +169,7 @@ export function MinimalHome({
 			<div className="lh-no-drag lh-wco-floating absolute right-2 top-2 z-10 flex max-w-[calc(100%-5.5rem)] flex-col items-end gap-2">
 				<div className="flex min-w-0 items-start gap-2">
 					<div className="graph-chrome-fade-in shrink-0 rounded-xl border bg-card/85 px-1 py-[3px] shadow-lg backdrop-blur">
-						<Hint label="Every reasoning chain" side="bottom">
+						<Hint label="Все цепочки рассуждений" side="bottom">
 							<button
 								type="button"
 								onClick={() => setChainsOpen(true)}
@@ -175,12 +177,12 @@ export function MinimalHome({
 								className="flex h-7 items-center gap-1.5 rounded-lg px-2.5 text-xs text-muted-foreground transition-colors hover:bg-accent"
 							>
 								<ListTreeIcon className="size-3" />
-								Chains
+								Цепочки
 							</button>
 						</Hint>
 					</div>
 					<div className="shrink-0 rounded-xl border bg-card/85 px-1 py-[3px] shadow-lg backdrop-blur">
-						<Hint label="Import notes into the graph" side="bottom">
+						<Hint label="Импортировать заметки в граф" side="bottom">
 							<button
 								type="button"
 								disabled={importing}
@@ -189,11 +191,12 @@ export function MinimalHome({
 								className="flex h-7 items-center gap-1.5 rounded-lg px-2.5 text-xs text-muted-foreground transition-colors hover:bg-accent disabled:opacity-50"
 							>
 								<UploadIcon className="size-3" />
-								{importing ? "Importing…" : "Import notes…"}
+								{importing ? "Импорт…" : "Импорт заметок…"}
 							</button>
 						</Hint>
 					</div>
 				</div>
+				<GraphExchange />
 				<NotesImportErrors errors={notesImport.errors} />
 				{costs && costs.runs.length > 0 && <GraphCostControl costs={costs} />}
 			</div>

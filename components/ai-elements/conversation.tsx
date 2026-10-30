@@ -42,8 +42,8 @@ export type ConversationEmptyStateProps = ComponentProps<"div"> & {
 
 export const ConversationEmptyState = ({
   className,
-  title = "No messages yet",
-  description = "Start a conversation to see messages here",
+  title = "Сообщений пока нет",
+  description = "Начните разговор — сообщения появятся здесь",
   icon,
   children,
   ...props
@@ -116,8 +116,7 @@ export type ConversationDownloadProps = Omit<
 };
 
 const defaultFormatMessage = (message: LhViewMessage): string => {
-  const roleLabel =
-    message.role.charAt(0).toUpperCase() + message.role.slice(1);
+  const roleLabel = message.role === "user" ? "Вы" : "Преподаватель";
   return `**${roleLabel}:** ${getMessageText(message)}`;
 };
 

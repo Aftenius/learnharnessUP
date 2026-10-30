@@ -43,13 +43,13 @@ export function ProbeDoneCard({ part }: { part: { input?: unknown; output?: unkn
 		<div data-testid="probe-done-card" className="my-3 rounded-xl border bg-card/60 p-3">
 			<div className="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
 				<ClipboardCheckIcon className="size-3.5 text-primary" />
-				Probe concluded — your assessment
+				Проба завершена — ваша оценка
 			</div>
 			{output && !output.ok ? (
-				<p className="text-sm text-muted-foreground">The prober retried: {output.error}</p>
+				<p className="text-sm text-muted-foreground">Проба повторила попытку: {output.error}</p>
 			) : state === "output-error" ? (
 				<p className="text-sm text-muted-foreground">
-					The assessment was malformed — the prober retried with a corrected one.
+					Оценка пришла повреждённой — проба повторила попытку с исправленной.
 				</p>
 			) : strands ? (
 				<div className="space-y-2">
@@ -64,7 +64,7 @@ export function ProbeDoneCard({ part }: { part: { input?: unknown; output?: unkn
 					)}
 				</div>
 			) : (
-				<p className="text-sm text-muted-foreground">Writing the assessment…</p>
+				<p className="text-sm text-muted-foreground">Пишем оценку…</p>
 			)}
 		</div>
 	);

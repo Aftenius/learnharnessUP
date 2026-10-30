@@ -85,6 +85,10 @@ export const POSITIONS_FILE = path.join(PATHS.graph, "positions.json");
  * read-modify-write. Shared shape/sanitizer: src/core/render-settings.ts.
  */
 export const RENDER_SETTINGS_FILE = path.join(PATHS.graph, "render-settings.json");
+/** SM-2 cards. Not a graph ledger: grades never land on GraphNode. */
+export const REVIEWS_FILE = path.join(PATHS.graph, "reviews.json");
+/** Contradiction proposals. Labels dismiss or mark a pair; nodes stay. */
+export const CONTRADICTIONS_FILE = path.join(PATHS.graph, "contradictions.json");
 
 /** The graph-family FORMAT STAMP sidecar (schema-versioning wave,
  *  2026-10-10): one version for the whole family — the four JSONL ledgers,

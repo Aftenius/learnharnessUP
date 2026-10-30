@@ -52,7 +52,7 @@ describe("ZeroKeysPill — the composer-hoisted notice", () => {
 	it("the pill takes the CTA's chrome with its own testid and copy", () => {
 		const html = renderToStaticMarkup(createElement(ZeroKeysPill, { onOpen: () => {} }));
 		assert.ok(html.includes('data-testid="setup-cta-keys"'));
-		assert.match(html, />Add a provider key<\/button>/);
+		assert.match(html, />Добавить ключ провайдера<\/button>/);
 		assert.doesNotMatch(html, /chats start|—/);
 		// the models CTA's testid must not appear on the keys pill
 		assert.ok(!html.includes('data-testid="setup-cta"'));
@@ -78,10 +78,10 @@ describe("SetupKeysBody — stage 1's self-contained first-key screen", () => {
 		);
 		assert.ok(html.indexOf('data-testid="setup-key-provider"') < html.indexOf('data-testid="chatgpt-login"'), "API keys remain primary, ChatGPT is secondary");
 		assert.doesNotMatch(html, /chatgpt-privacy-notice|OpenAI privacy|Manage usage/);
-		assert.ok(html.includes("Choose your AI provider and paste its API key. You’ll pick your models next."));
-		assert.doesNotMatch(html, /First, add|keys unlock|—/);
+		assert.ok(html.includes("Выберите провайдера ИИ и вставьте ключ API. Дальше — выбор моделей."));
+		assert.doesNotMatch(html, /First, add|keys unlock/);
 		assert.ok(html.includes('data-testid="setup-key-provider"'));
-		assert.ok(html.includes("Pick a provider…"));
+		assert.ok(html.includes("Выберите провайдера…"));
 		assert.ok(!html.includes('data-testid="setup-key-input"'), "no paste field before a provider is picked");
 	});
 
@@ -91,7 +91,7 @@ describe("SetupKeysBody — stage 1's self-contained first-key screen", () => {
 		);
 		assert.ok(html.includes('data-testid="setup-key-input"'));
 		assert.ok(html.includes('data-testid="setup-key-save"'));
-		assert.ok(html.includes("Save key"));
+		assert.ok(html.includes("Сохранить ключ"));
 		assert.ok(html.includes("OpenRouter"), "the chosen provider's label rides the trigger");
 	});
 
@@ -113,7 +113,7 @@ describe("SetupKeysBody — stage 1's self-contained first-key screen", () => {
 
 describe("the dictation keyless seam (owner dictation trio)", () => {
 	it("the client-authored short line — not the route's dev-speak", () => {
-		assert.equal(DICTATION_KEYLESS, "Dictation needs a Deepgram key");
+		assert.equal(DICTATION_KEYLESS, "Для диктовки нужен ключ Deepgram");
 	});
 
 	it("the Deepgram row id matches the keys store (KeysSection openRow)", () => {
