@@ -21,8 +21,9 @@ const EXPECT_RE = /\bexpect=(?:"([^"]*)"|'([^']*)'|(\S+))/;
 export function parseRunnableSnippet(language: string, meta: string): RunnableSnippet | null {
 	if (language !== "python" || !/\brun\b/.test(meta)) return null;
 	const match = EXPECT_RE.exec(meta);
-	const expect = match?.[1] ?? match?.[2] ?? match?.[3];
-	return expect === undefined ? {} : { expect };
+	const raw = match?.[1] ?? match?.[2] ?? match?.[3];
+	if (raw === undefined) return {};
+	return { expect: raw.replace(/\\n/g, "\n").replace(/\\t/g, "\t") };
 }
 
 export function splitTrace(stdout: string): { visible: string; frames: TraceFrame[] } {
@@ -56,20 +57,35 @@ export function snippetSrcDoc(code: string, expect: string | undefined): string 
 	const payload = JSON.stringify({ code, expect: expect ?? null, runMs: SNIPPET_RUN_MS, outputLimit: SNIPPET_OUTPUT_LIMIT }).replace(/</g, "\\u003c");
 	return `<!doctype html>
 <html><head>
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; connect-src https://cdn.jsdelivr.net;">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; connect-src https://cdn.jsdelivr.net; worker-src blob: https://cdn.jsdelivr.net;">
 </head><body><script>
 const job = ${payload};
 const send = (msg) => parent.postMessage(Object.assign({ type: "lh-snippet" }, msg), "*");
-const timer = setTimeout(() => send({ ok: false, error: "timed out" }), job.runMs + 20000);
+const timer = setTimeout(() => send({ ok: false, error: "timed out" }), 90000);
 (async () => {
   try {
     const pyodideMod = await import("https://cdn.jsdelivr.net/pyodide/v0.26.4/full/pyodide.mjs");
-    const pyodide = await pyodideMod.loadPyodide();
+    const pyodide = await pyodideMod.loadPyodide({ indexURL: "https://cdn.jsdelivr.net/pyodide/v0.26.4/full/" });
     let out = "";
-    pyodide.setStdout({ batched: (text) => { out += text; } });
-    pyodide.setStderr({ batched: (text) => { out += text; } });
-    const run = pyodide.runPythonAsync(job.code);
+    const add = (text) => { out += text.endsWith("\\n") ? text : text + "\\n"; };
+    pyodide.setStdout({ batched: add });
+    pyodide.setStderr({ batched: add });
     const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("timed out")), job.runMs));
+    const run = (async () => {
+      await pyodide.runPythonAsync(
+        "import asyncio as _lh_asyncio\\n" +
+        "_lh_pending = []\\n" +
+        "def _lh_run(coro, *args, **kwargs):\\n" +
+        "    _lh_pending.append(coro)\\n" +
+        "    return None\\n" +
+        "_lh_asyncio.run = _lh_run\\n"
+      );
+      await pyodide.runPythonAsync(job.code);
+      await pyodide.runPythonAsync(
+        "for _lh_coro in _lh_pending:\\n" +
+        "    await _lh_coro\\n"
+      );
+    })();
     await Promise.race([run, timeout]);
     if (out.length > job.outputLimit) out = out.slice(0, job.outputLimit) + "\\n…";
     const stdout = out.replace(/\\s+$/, "");

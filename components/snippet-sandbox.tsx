@@ -1,7 +1,63 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { code, type HighlightResult } from "@streamdown/code";
 import { snippetSrcDoc, splitTrace, type TraceFrame } from "@/src/core";
+
+/** Same face on the painted layer and the transparent editor, or the caret drifts. */
+const SOURCE_FACE =
+	"m-0 w-full min-w-0 resize-none overflow-hidden whitespace-pre-wrap break-words bg-transparent p-2 font-mono text-xs leading-5 [overflow-wrap:anywhere] [tab-size:4]";
+
+type PaintToken = { content: string; htmlStyle?: Record<string, string> };
+
+function tokenColor(token: PaintToken): string | undefined {
+	const style = token.htmlStyle;
+	if (!style) return undefined;
+	return style["--shiki-dark"] ?? style.color;
+}
+
+/** Python tokens from the same highlighter as the other fences. Plain text until it resolves. */
+function SnippetHighlight({ source }: { source: string }) {
+	const [lines, setLines] = useState<PaintToken[][] | null>(null);
+
+	useEffect(() => {
+		let live = true;
+		setLines(null);
+		const options = { code: source, language: "python" as const, themes: code.getThemes() };
+		const apply = (result: HighlightResult) => {
+			if (live) setLines(result.tokens as PaintToken[][]);
+		};
+		const cached = code.highlight(options, apply);
+		if (cached) apply(cached);
+		return () => {
+			live = false;
+		};
+	}, [source]);
+
+	if (!lines) {
+		return (
+			<pre aria-hidden data-testid="snippet-highlight" className={SOURCE_FACE}>
+				{source.endsWith("\n") ? `${source} ` : source}
+			</pre>
+		);
+	}
+
+	return (
+		<pre aria-hidden data-testid="snippet-highlight" className={SOURCE_FACE}>
+			{lines.map((line, index) => (
+				<span key={index} className="block min-h-5">
+					{line.length === 0
+						? " "
+						: line.map((token, tokenIndex) => (
+								<span key={tokenIndex} style={{ color: tokenColor(token) }}>
+									{token.content}
+								</span>
+							))}
+				</span>
+			))}
+		</pre>
+	);
+}
 
 /**
  * Python in the existing iframe sandbox: scripts only, no same-origin.
@@ -44,14 +100,18 @@ export function SnippetSandbox({ code, expect }: { code: string; expect?: string
 
 	const current = frames[frame];
 	return (
-		<div data-testid="snippet-sandbox" className="my-2 rounded-xl border bg-card p-3">
-			<textarea
-				value={source}
-				onChange={(event) => setSource(event.target.value)}
-				aria-label="Фрагмент Python"
-				spellCheck={false}
-				className="min-h-24 w-full resize-y rounded-md border bg-background p-2 font-mono text-xs outline-none"
-			/>
+		<div data-testid="snippet-sandbox" className="relative my-2 rounded-xl border bg-card p-3">
+			<div className="grid w-full min-w-0 overflow-hidden rounded-md border bg-background">
+				<SnippetHighlight source={source} />
+				<textarea
+					value={source}
+					rows={Math.max(1, source.split("\n").length)}
+					onChange={(event) => setSource(event.target.value)}
+					aria-label="Фрагмент Python"
+					spellCheck={false}
+					className={`${SOURCE_FACE} field-sizing-content col-start-1 row-start-1 text-transparent caret-[var(--foreground)] outline-none selection:bg-primary/30`}
+				/>
+			</div>
 			<div className="mt-2 flex items-center gap-2">
 				<button
 					type="button"
@@ -95,7 +155,7 @@ export function SnippetSandbox({ code, expect }: { code: string; expect?: string
 					title="Фрагмент Python"
 					sandbox="allow-scripts"
 					srcDoc={srcDoc}
-					className="hidden"
+					className="pointer-events-none absolute h-px w-px overflow-hidden border-0 opacity-0"
 				/>
 			)}
 		</div>

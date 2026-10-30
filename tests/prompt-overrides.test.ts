@@ -273,6 +273,23 @@ describe("composeInstructions: override honoring + the byte-identical source pat
 		assert.equal(composeInstructions("prober"), oldLoader("prober"));
 	});
 
+	it("the teacher prompt keeps the banned opener and the Russian style sample", () => {
+		const composed = composeInstructions("teacher");
+		assert.ok(composed.includes("В современном мире"), "the banned opener stays in the voice fragment");
+		assert.ok(
+			composed.includes("Ток в проводе — это движение электронов."),
+			"the Russian style sample stays in the voice fragment",
+		);
+	});
+
+	it("the teacher prompt carries the lesson-authoring spiral and the slop bans", () => {
+		const composed = composeInstructions("teacher");
+		assert.ok(composed.includes("from math import *"), "the import trap stays in the authoring fragment");
+		assert.ok(composed.includes("не изобретать велосипеды"), "the allowed teacher aside stays");
+		assert.ok(composed.includes("В заключение следует отметить"), "the banned closer stays in the authoring fragment");
+		assert.equal(composeInstructions("prober").includes("не изобретать велосипеды"), false);
+	});
+
 	it("an enabled override swaps in; switch off or file absent composes source", () => {
 		promptOverrides.writeOverride("teacher/20-teaching.md", "CUSTOM TEACHING LOOP");
 		try {

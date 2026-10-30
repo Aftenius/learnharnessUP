@@ -100,6 +100,7 @@ describe("local retrieval and presets", () => {
 describe("snippet traces and graph export", () => {
 	it("parses a runnable fence, splits trace frames, and exports GraphML plus a zip", () => {
 		assert.deepEqual(parseRunnableSnippet("python", 'run expect="4"'), { expect: "4" });
+		assert.deepEqual(parseRunnableSnippet("python", 'run expect="a\\nb"'), { expect: "a\nb" });
 		assert.equal(parseRunnableSnippet("python", ""), null);
 		assert.equal(parseRunnableSnippet("ts", "run"), null);
 		const split = splitTrace('ok\nLH_TRACE {"step":1,"label":"push","state":{"stack":[1]}}\n');
@@ -107,6 +108,8 @@ describe("snippet traces and graph export", () => {
 		assert.equal(split.frames[0]?.label, "push");
 		const doc = snippetSrcDoc("print(1)", "1");
 		assert.match(doc, /default-src 'none'/);
+		assert.match(doc, /wasm-unsafe-eval/);
+		assert.match(doc, /_lh_asyncio\.run = _lh_run/);
 		assert.match(doc, /pyodide/);
 		assert.doesNotMatch(doc, /allow-same-origin/);
 		const nodes = [{ id: "n1", name: "Alpha", statement: "Alpha holds." }];

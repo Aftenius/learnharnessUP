@@ -242,6 +242,17 @@ describe("md-blocks — the restored plain blockquote (owner round, 2026-10-07)"
 	});
 });
 
+describe("md-blocks — runnable python", () => {
+	it("shows every line of the snippet with no inner scroll", () => {
+		const html = render("```python run\nprint(1)\nprint(2)\nprint(3)\n```");
+		assert.ok(html.includes('data-testid="snippet-sandbox"'));
+		assert.ok(html.includes("field-sizing-content"));
+		assert.ok(html.includes("overflow-hidden"));
+		assert.ok(html.includes('data-testid="snippet-highlight"'));
+		assert.match(html, /rows="4"/);
+	});
+});
+
 describe("ThinkingBlock — the document band + ⌘T sync (owner rounds, 2026-10-07)", () => {
 	it("the row is the document band — round four geometry (owner, 2026-10-07)", () => {
 		const html = renderToStaticMarkup(<ThinkingBlock text="banded" defaultOpen />);
