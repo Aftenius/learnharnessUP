@@ -282,6 +282,17 @@ describe("composeInstructions: override honoring + the byte-identical source pat
 		);
 	});
 
+	it("the teacher prompt bans etiquette immediately after the role", () => {
+		const teacher = effectivePromptSegments("teacher", {});
+		assert.equal(teacher[1]?.path, "teacher/02-human-reply.md");
+		const composed = composeInstructions("teacher");
+		const ban = composed.indexOf("Отличный вопрос");
+		const method = composed.indexOf("Principle i");
+		assert.ok(ban > 0 && method > ban, "the opener ban sits above the teaching method");
+		assert.equal(composeInstructions("prober").includes("Отличный вопрос"), false);
+		assert.equal(composeInstructions("practice").includes("Отличный вопрос"), false);
+	});
+
 	it("the teacher prompt carries the lesson-authoring spiral and the slop bans", () => {
 		const composed = composeInstructions("teacher");
 		assert.ok(composed.includes("from math import *"), "the import trap stays in the authoring fragment");

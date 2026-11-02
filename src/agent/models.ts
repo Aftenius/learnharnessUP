@@ -16,6 +16,7 @@ import { DEFAULT_THINKING_ORDER } from "../core/settings.ts";
 import packageMetadata from "../../package.json" with { type: "json" };
 import { chatGPTModel } from "./chatgpt-bridge.ts";
 import { chatGPTStream } from "./chatgpt-stream.ts";
+import { withDenseSampling } from "./dense-sampling.ts";
 import type { ChatGPTDispatchLifecycle } from "./chatgpt-request-cycle.ts";
 import { createClaudeCodeProvider } from "./claude-code/provider.ts";
 import { streamClaudeCode } from "./claude-code/stream.ts";
@@ -167,9 +168,21 @@ export function piEngineForSpec(spec: ResolvedModelSpec, background: boolean | (
 				const currentLevel = thinkingPreference
 					? clampThinkingLevel(currentModel, thinkingPreference)
 					: defaultThinkingLevel(currentModel);
-				return current.streamSimple(permitImages(currentModel), context, { ...options, reasoning: currentLevel === "off" ? undefined : currentLevel });
+				return current.streamSimple(permitImages(currentModel), context, withDenseSampling({
+					api: currentModel.api,
+					baseUrl: currentModel.baseUrl,
+					reasoning: Boolean(currentModel.reasoning),
+					completions: true,
+					options: { ...options, reasoning: currentLevel === "off" ? undefined : currentLevel },
+				}));
 			}
-			const requestOptions = { ...options, reasoning: level === "off" ? undefined : level };
+			const requestOptions = withDenseSampling({
+				api: requestModel.api,
+				baseUrl: requestModel.baseUrl,
+				reasoning: Boolean(requestModel.reasoning),
+				completions: false,
+				options: { ...options, reasoning: level === "off" ? undefined : level },
+			});
 			const purpose = typeof background === "function" ? background : () => background;
 			const stream = spec.provider === "chatgpt" ? chatGPTStream(purpose, lifecycle) : nativeId ? nativeSubscriptionStream(models.getProvider(nativeId)!, purpose, lifecycle) : models.streamSimple.bind(models);
 			return stream(requestModel, context, requestOptions);
